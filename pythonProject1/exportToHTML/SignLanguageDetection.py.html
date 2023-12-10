@@ -1,0 +1,85 @@
+<html>
+<head>
+<title>SignLanguageDetection.py</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.s0 { color: #cf8e6d;}
+.s1 { color: #bcbec4;}
+.s2 { color: #bcbec4;}
+.s3 { color: #2aacb8;}
+.s4 { color: #6aab73;}
+.s5 { color: #7a7e85;}
+</style>
+</head>
+<body bgcolor="#1e1f22">
+<table CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<tr><td><center>
+<font face="Arial, Helvetica" color="#000000">
+SignLanguageDetection.py</font>
+</center></td></tr></table>
+<pre><span class="s0">import </span><span class="s1">cv2</span>
+<span class="s0">import </span><span class="s1">mediapipe </span><span class="s0">as </span><span class="s1">mp</span>
+
+<span class="s1">mp_hands </span><span class="s2">= </span><span class="s1">mp</span><span class="s2">.</span><span class="s1">solutions</span><span class="s2">.</span><span class="s1">hands</span>
+<span class="s1">hands </span><span class="s2">= </span><span class="s1">mp_hands</span><span class="s2">.</span><span class="s1">Hands</span><span class="s2">()</span>
+<span class="s1">mp_draw </span><span class="s2">= </span><span class="s1">mp</span><span class="s2">.</span><span class="s1">solutions</span><span class="s2">.</span><span class="s1">drawing_utils</span>
+<span class="s1">cap </span><span class="s2">= </span><span class="s1">cv2</span><span class="s2">.</span><span class="s1">VideoCapture</span><span class="s2">(</span><span class="s3">0</span><span class="s2">)</span>
+
+<span class="s1">finger_tips </span><span class="s2">= [</span><span class="s3">8</span><span class="s2">, </span><span class="s3">12</span><span class="s2">, </span><span class="s3">16</span><span class="s2">, </span><span class="s3">20</span><span class="s2">]</span>
+<span class="s1">thumb_tip </span><span class="s2">= </span><span class="s3">4</span>
+
+<span class="s1">like_img </span><span class="s2">= </span><span class="s1">cv2</span><span class="s2">.</span><span class="s1">imread</span><span class="s2">(</span><span class="s4">&quot;images/like.png&quot;</span><span class="s2">)</span>
+<span class="s1">like_img </span><span class="s2">= </span><span class="s1">cv2</span><span class="s2">.</span><span class="s1">resize</span><span class="s2">(</span><span class="s1">like_img</span><span class="s2">, (</span><span class="s3">200</span><span class="s2">, </span><span class="s3">180</span><span class="s2">))</span>
+
+<span class="s1">dislike_img </span><span class="s2">= </span><span class="s1">cv2</span><span class="s2">.</span><span class="s1">imread</span><span class="s2">(</span><span class="s4">&quot;images/dislike.png&quot;</span><span class="s2">)</span>
+<span class="s1">dislike_img </span><span class="s2">= </span><span class="s1">cv2</span><span class="s2">.</span><span class="s1">resize</span><span class="s2">(</span><span class="s1">dislike_img</span><span class="s2">, (</span><span class="s3">200</span><span class="s2">, </span><span class="s3">180</span><span class="s2">))</span>
+
+<span class="s0">while True</span><span class="s2">:</span>
+    <span class="s1">ret</span><span class="s2">, </span><span class="s1">img </span><span class="s2">= </span><span class="s1">cap</span><span class="s2">.</span><span class="s1">read</span><span class="s2">()</span>
+    <span class="s1">img </span><span class="s2">= </span><span class="s1">cv2</span><span class="s2">.</span><span class="s1">flip</span><span class="s2">(</span><span class="s1">img</span><span class="s2">, </span><span class="s3">1</span><span class="s2">)</span>
+    <span class="s1">h</span><span class="s2">, </span><span class="s1">w</span><span class="s2">, </span><span class="s1">c </span><span class="s2">= </span><span class="s1">img</span><span class="s2">.</span><span class="s1">shape</span>
+    <span class="s1">results </span><span class="s2">= </span><span class="s1">hands</span><span class="s2">.</span><span class="s1">process</span><span class="s2">(</span><span class="s1">img</span><span class="s2">)</span>
+
+    <span class="s0">if </span><span class="s1">results</span><span class="s2">.</span><span class="s1">multi_hand_landmarks</span><span class="s2">:</span>
+        <span class="s0">for </span><span class="s1">hand_landmark </span><span class="s0">in </span><span class="s1">results</span><span class="s2">.</span><span class="s1">multi_hand_landmarks</span><span class="s2">:</span>
+            <span class="s1">lm_list </span><span class="s2">= []</span>
+            <span class="s0">for </span><span class="s1">id</span><span class="s2">, </span><span class="s1">lm </span><span class="s0">in </span><span class="s1">enumerate</span><span class="s2">(</span><span class="s1">hand_landmark</span><span class="s2">.</span><span class="s1">landmark</span><span class="s2">):</span>
+                <span class="s1">lm_list</span><span class="s2">.</span><span class="s1">append</span><span class="s2">(</span><span class="s1">lm</span><span class="s2">)</span>
+            <span class="s1">finger_fold_status </span><span class="s2">= []</span>
+            <span class="s0">for </span><span class="s1">tip </span><span class="s0">in </span><span class="s1">finger_tips</span><span class="s2">:</span>
+                <span class="s1">x</span><span class="s2">, </span><span class="s1">y </span><span class="s2">= </span><span class="s1">int</span><span class="s2">(</span><span class="s1">lm_list</span><span class="s2">[</span><span class="s1">tip</span><span class="s2">].</span><span class="s1">x </span><span class="s2">* </span><span class="s1">w</span><span class="s2">), </span><span class="s1">int</span><span class="s2">(</span><span class="s1">lm_list</span><span class="s2">[</span><span class="s1">tip</span><span class="s2">].</span><span class="s1">y </span><span class="s2">* </span><span class="s1">h</span><span class="s2">)</span>
+                <span class="s5"># print(id, &quot;:&quot;, x, y)</span>
+                <span class="s1">cv2</span><span class="s2">.</span><span class="s1">circle</span><span class="s2">(</span><span class="s1">img</span><span class="s2">, (</span><span class="s1">x</span><span class="s2">, </span><span class="s1">y</span><span class="s2">), </span><span class="s3">15</span><span class="s2">, (</span><span class="s3">255</span><span class="s2">, </span><span class="s3">0</span><span class="s2">, </span><span class="s3">0</span><span class="s2">), </span><span class="s1">cv2</span><span class="s2">.</span><span class="s1">FILLED</span><span class="s2">)</span>
+
+                <span class="s0">if </span><span class="s1">lm_list</span><span class="s2">[</span><span class="s1">tip</span><span class="s2">].</span><span class="s1">x </span><span class="s2">&lt; </span><span class="s1">lm_list</span><span class="s2">[</span><span class="s1">tip </span><span class="s2">- </span><span class="s3">3</span><span class="s2">].</span><span class="s1">x</span><span class="s2">:</span>
+                    <span class="s1">cv2</span><span class="s2">.</span><span class="s1">circle</span><span class="s2">(</span><span class="s1">img</span><span class="s2">, (</span><span class="s1">x</span><span class="s2">, </span><span class="s1">y</span><span class="s2">), </span><span class="s3">15</span><span class="s2">, (</span><span class="s3">0</span><span class="s2">, </span><span class="s3">255</span><span class="s2">, </span><span class="s3">0</span><span class="s2">), </span><span class="s1">cv2</span><span class="s2">.</span><span class="s1">FILLED</span><span class="s2">)</span>
+                    <span class="s1">finger_fold_status</span><span class="s2">.</span><span class="s1">append</span><span class="s2">(</span><span class="s0">True</span><span class="s2">)</span>
+                <span class="s0">else</span><span class="s2">:</span>
+                    <span class="s1">finger_fold_status</span><span class="s2">.</span><span class="s1">append</span><span class="s2">(</span><span class="s0">False</span><span class="s2">)</span>
+
+            <span class="s1">print</span><span class="s2">(</span><span class="s1">finger_fold_status</span><span class="s2">)</span>
+
+            <span class="s0">if </span><span class="s1">all</span><span class="s2">(</span><span class="s1">finger_fold_status</span><span class="s2">):</span>
+                <span class="s5"># like</span>
+                <span class="s0">if </span><span class="s1">lm_list</span><span class="s2">[</span><span class="s1">thumb_tip</span><span class="s2">].</span><span class="s1">y </span><span class="s2">&lt; </span><span class="s1">lm_list</span><span class="s2">[</span><span class="s1">thumb_tip </span><span class="s2">- </span><span class="s3">1</span><span class="s2">].</span><span class="s1">y </span><span class="s2">&lt; </span><span class="s1">lm_list</span><span class="s2">[</span><span class="s1">thumb_tip </span><span class="s2">- </span><span class="s3">2</span><span class="s2">].</span><span class="s1">y</span><span class="s2">:</span>
+                    <span class="s1">print</span><span class="s2">(</span><span class="s4">&quot;LIKE&quot;</span><span class="s2">)</span>
+                    <span class="s1">cv2</span><span class="s2">.</span><span class="s1">putText</span><span class="s2">(</span><span class="s1">img</span><span class="s2">, </span><span class="s4">&quot;LIKE&quot;</span><span class="s2">, (</span><span class="s3">20</span><span class="s2">, </span><span class="s3">30</span><span class="s2">), </span><span class="s1">cv2</span><span class="s2">.</span><span class="s1">FONT_HERSHEY_SIMPLEX</span><span class="s2">, </span><span class="s3">1</span><span class="s2">, (</span><span class="s3">0</span><span class="s2">, </span><span class="s3">255</span><span class="s2">, </span><span class="s3">0</span><span class="s2">), </span><span class="s3">3</span><span class="s2">)</span>
+                    <span class="s1">h</span><span class="s2">, </span><span class="s1">w</span><span class="s2">, </span><span class="s1">c </span><span class="s2">= </span><span class="s1">like_img</span><span class="s2">.</span><span class="s1">shape</span>
+                    <span class="s1">img</span><span class="s2">[</span><span class="s3">35</span><span class="s2">:</span><span class="s1">h </span><span class="s2">+ </span><span class="s3">35</span><span class="s2">, </span><span class="s3">30</span><span class="s2">:</span><span class="s1">w </span><span class="s2">+ </span><span class="s3">30</span><span class="s2">] = </span><span class="s1">like_img</span>
+                <span class="s5"># Dislike</span>
+                <span class="s0">if </span><span class="s1">lm_list</span><span class="s2">[</span><span class="s1">thumb_tip</span><span class="s2">].</span><span class="s1">y </span><span class="s2">&gt; </span><span class="s1">lm_list</span><span class="s2">[</span><span class="s1">thumb_tip </span><span class="s2">- </span><span class="s3">1</span><span class="s2">].</span><span class="s1">y </span><span class="s2">&gt; </span><span class="s1">lm_list</span><span class="s2">[</span><span class="s1">thumb_tip </span><span class="s2">- </span><span class="s3">2</span><span class="s2">].</span><span class="s1">y</span><span class="s2">:</span>
+                    <span class="s1">cv2</span><span class="s2">.</span><span class="s1">putText</span><span class="s2">(</span><span class="s1">img</span><span class="s2">, </span><span class="s4">&quot;DISLIKE&quot;</span><span class="s2">, (</span><span class="s3">20</span><span class="s2">, </span><span class="s3">30</span><span class="s2">), </span><span class="s1">cv2</span><span class="s2">.</span><span class="s1">FONT_HERSHEY_SIMPLEX</span><span class="s2">, </span><span class="s3">1</span><span class="s2">, (</span><span class="s3">0</span><span class="s2">, </span><span class="s3">0</span><span class="s2">, </span><span class="s3">255</span><span class="s2">), </span><span class="s3">3</span><span class="s2">)</span>
+                    <span class="s1">print</span><span class="s2">(</span><span class="s4">&quot;DISLIKE&quot;</span><span class="s2">)</span>
+                    <span class="s1">h</span><span class="s2">, </span><span class="s1">w</span><span class="s2">, </span><span class="s1">c </span><span class="s2">= </span><span class="s1">dislike_img</span><span class="s2">.</span><span class="s1">shape</span>
+                    <span class="s1">img</span><span class="s2">[</span><span class="s3">35</span><span class="s2">:</span><span class="s1">h </span><span class="s2">+ </span><span class="s3">35</span><span class="s2">, </span><span class="s3">30</span><span class="s2">:</span><span class="s1">w </span><span class="s2">+ </span><span class="s3">30</span><span class="s2">] = </span><span class="s1">dislike_img</span>
+
+            <span class="s1">mp_draw</span><span class="s2">.</span><span class="s1">draw_landmarks</span><span class="s2">(</span><span class="s1">img</span><span class="s2">, </span><span class="s1">hand_landmark</span><span class="s2">,</span>
+                                   <span class="s1">mp_hands</span><span class="s2">.</span><span class="s1">HAND_CONNECTIONS</span><span class="s2">,</span>
+                                   <span class="s1">mp_draw</span><span class="s2">.</span><span class="s1">DrawingSpec</span><span class="s2">((</span><span class="s3">0</span><span class="s2">, </span><span class="s3">0</span><span class="s2">, </span><span class="s3">255</span><span class="s2">), </span><span class="s3">6</span><span class="s2">, </span><span class="s3">3</span><span class="s2">),</span>
+                                   <span class="s1">mp_draw</span><span class="s2">.</span><span class="s1">DrawingSpec</span><span class="s2">((</span><span class="s3">0</span><span class="s2">, </span><span class="s3">255</span><span class="s2">, </span><span class="s3">0</span><span class="s2">), </span><span class="s3">4</span><span class="s2">, </span><span class="s3">2</span><span class="s2">)</span>
+                                   <span class="s2">)</span>
+
+    <span class="s1">cv2</span><span class="s2">.</span><span class="s1">imshow</span><span class="s2">(</span><span class="s4">&quot;Hand Sign Detection&quot;</span><span class="s2">, </span><span class="s1">img</span><span class="s2">)</span>
+    <span class="s1">cv2</span><span class="s2">.</span><span class="s1">waitKey</span><span class="s2">(</span><span class="s3">1</span><span class="s2">)</span></pre>
+</body>
+</html>
